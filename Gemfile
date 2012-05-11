@@ -9,7 +9,7 @@ group :development do
   gem 'heroku'
 end
 
-gem 'constant-contact-ruby'
+gem 'constant-contact-ruby', :require => 'constant_contact'
 gem 'httparty'
 
 
