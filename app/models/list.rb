@@ -8,8 +8,9 @@ class List < ActiveRecord::Base
     setup_constant_contact
     contact = Contact.search_by_email(data[:email]) || Contact.add(
       :email_address => data[:email],
-      :first_name => data[:first_name],
-      :last_name => data[:last_name])
+      :first_name    => data[:first_name],
+      :last_name     => data[:last_name],
+      :postal_code   => data[:postal_code])
     contact.add_to_list!(list)
   end
 
