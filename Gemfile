@@ -10,5 +10,4 @@ group :development do
   gem 'heroku'
 end
 
-gem 'constant-contact-ruby', :require => 'constant_contact'
-gem 'httparty'
+gem 'constant_contact', :git => 'https://github.com/tablexi/constant_contact.git'
