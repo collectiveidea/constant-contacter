@@ -10,4 +10,6 @@ group :development do
   gem 'heroku'
 end
 
-gem 'constant_contact', :git => 'https://github.com/tablexi/constant_contact.git'
+gem 'oauth2'
+
+gem 'foreman'

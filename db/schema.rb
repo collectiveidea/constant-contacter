@@ -11,16 +11,20 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120511212135) do
+ActiveRecord::Schema.define(:version => 20121004224521) do
 
   create_table "lists", :force => true do |t|
     t.string   "name"
     t.string   "username"
     t.string   "password"
     t.integer  "list"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
     t.string   "api_key"
+    t.string   "consumer_secret"
+    t.string   "authentication_code"
   end
+
+  add_index "lists", ["name"], :name => "index_lists_on_name"
 
 end
