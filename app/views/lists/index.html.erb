@@ -1,0 +1,31 @@
+<div class="page-header">
+  <h1>Lists</h1>
+</div>
+
+<table class="table">
+  <tr>
+    <th>Name</th>
+    <th>ID</th>
+    <th>Username</th>
+    <th>API Key</th>
+    <th>Consumer Secret</th>
+    <th>Authentication</th>
+  </tr>
+
+  <% @lists.each do |list| %>
+    <tr>
+      <td><%= list.name %></td>
+      <td><%= list.list %></td>
+      <td><%= list.username %></td>
+      <td><%= list.api_key %></td>
+      <td><%= list.consumer_secret %></td>
+      <td>
+        <% if (list.authorized?) %>
+          <span>Authorized</span>
+        <% else %>
+          <%= link_to %>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>

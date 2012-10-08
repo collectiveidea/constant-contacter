@@ -4,12 +4,9 @@ class List < ActiveRecord::Base
 
   attr_accessor :client, :token
 
-  require 'net/http'
-  require 'oauth2'
+  require 'json'
 
   def add_email(data)
-    authenticate
-
     if contact = ConstantContact.find_contact_by_email(data[:email])
       # Because Constant Contact doesn't return a full contact when searching by email
       contact = ConstantContact.find_contact(contact.int_id)
@@ -32,6 +29,11 @@ class List < ActiveRecord::Base
     @client.auth_code.authorize_url(:redirect_uri => "https://constant-contacter.herokuapp.com/oauth/callback")
   end
 
+  def save_authentication_code(code)
+    self.authentication_code = code
+    self.save!
+  end
+
   def create_token(code)
     @token = @client.auth_code.get_token(code, :redirect_uri => 'https://constant-contacter.herokuapp.com/oauth/callback')
   end
@@ -40,4 +42,7 @@ class List < ActiveRecord::Base
     @access_token.get('', :params => { '' => '' })
   end
 
+  def authorized?
+    token.blank?
+  end
 end

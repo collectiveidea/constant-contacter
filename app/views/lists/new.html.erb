@@ -1,0 +1,23 @@
+<div class="page-header">
+  <h1>New List</h1>
+</div>
+
+<%= form_for [@list] do |f| %>
+  <label>List Name</label>
+  <%= f.text_field :name %>
+  <span class="help-block">Choose a name to identify this list on Constant Contacter.</span>
+
+  <label>List ID</label>
+  <%= f.text_field :list %>
+  <span class="help-block">The ID number of the list associated with your account.</span>
+
+  <label>Constanct Contact API Key</label>
+  <%= f.text_field :api_key %>
+
+  <label>Constant Contact Consumer Secrete</label>
+  <%= f.text_field :consumer_secret %>
+
+  <div class="form-actions">
+    <%= f.submit 'Create', :class => 'btn btn-primary' %>
+  </div>
+<% end %>

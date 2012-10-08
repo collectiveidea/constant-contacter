@@ -10,6 +10,11 @@ group :development do
   gem 'heroku'
 end
 
-gem 'oauth2'
+gem 'sass-rails'
+gem 'bootstrap-sass'
+
+gem 'omniauth-constantcontact2'
+gem 'json'
 
 gem 'foreman'
+gem 'thin'
