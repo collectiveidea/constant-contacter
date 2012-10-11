@@ -2,9 +2,16 @@ class List < ActiveRecord::Base
   attr_accessible :list, :name, :password, :username, :api_key, :authentication_code
   validates :name, :uniqueness => true, :presence => true
 
-  attr_accessor :client, :token
-
   require 'json'
+
+  def save_authentication_code(code)
+    self.authentication_code = code
+    self.save!
+  end
+
+  def authorized?
+    authentication_code.blank?
+  end
 
   def add_email(data)
     if contact = ConstantContact.find_contact_by_email(data[:email])
@@ -21,28 +28,24 @@ class List < ActiveRecord::Base
     end
   end
 
-  def authenticate
-    @client = OAuth2::Client.new(api_key, consumer_secret, :site => 'https://oauth2.constantcontact.com', :authorize_url => '/oauth2/oauth/siteowner/authorize')
+  def oauth_client
+    OAuth2::Client.new(
+      api_key,
+      consumer_secret,
+      :site => 'https://oauth2.constantcontact.com',
+      :authorize_url => '/oauth2/oauth/siteowner/authorize',
+      :token_url => '/oauth2/oauth/token')
   end
 
-  def authorize_url
-    @client.auth_code.authorize_url(:redirect_uri => "https://constant-contacter.herokuapp.com/oauth/callback")
-  end
-
-  def save_authentication_code(code)
-    self.authentication_code = code
-    self.save!
-  end
-
-  def create_token(code)
-    @token = @client.auth_code.get_token(code, :redirect_uri => 'https://constant-contacter.herokuapp.com/oauth/callback')
+  def oauth_token
+    OAuth2::AccessToken.new(oauth_client, authentication_code)
   end
 
   def find_contact_by_email(email)
-    @access_token.get('', :params => { '' => '' })
+    oauth_token.get("https://api.constantcontact.com/ws/customers/#{username}/contacts?email=#{email}")
   end
 
-  def authorized?
-    token.blank?
+  def new_contact
+
   end
 end
