@@ -23,7 +23,7 @@ class ConstantContact
     response = oauth_token.get("https://api.constantcontact.com/ws/customers/#{@username}/contacts?email=#{email}")
     hash = Hash.from_xml(response.body)
     if hash['entry'].nil?
-      false
+      nil
     else
       hash
     end
@@ -40,11 +40,9 @@ class ConstantContact
   end
 
   def contact_list_ids_from_hash(response_hash)
-    array = []
-    response_hash["entry"]["content"]["Contact"]["ContactLists"].each do |list|
-      array << list["ContactList"]["id"]
+    (response_hash["entry"]["content"]["Contact"]["ContactLists"] || {}).map do |key, value|
+      value["id"]
     end
-    array
   end
 
   def new_contact(new_contact)
