@@ -13,7 +13,7 @@ class List < ActiveRecord::Base
 
   def add_email(data)
     constant_contact = ConstantContact.new(self)
-    if contact = constant_contact.find_contact_by_email(data[:email])
+    if contact_hash = constant_contact.find_contact_by_email(data[:email])
       # Because Constant Contact doesn't return a full contact when searching by email
       contact = constant_contact.find_contact(contact.int_id)
       contact.contact_lists = contact_contact_lists | [list]

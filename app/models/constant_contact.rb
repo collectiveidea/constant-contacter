@@ -22,7 +22,7 @@ class ConstantContact
   def find_contact_by_email(email)
     response = oauth_token.get("https://api.constantcontact.com/ws/customers/#{@username}/contacts?email=#{email}")
     hash = Hash.from_xml(response.body)
-    if hash['feed']['entry'].nil?
+    if hash['entry'].nil?
       false
     else
       hash
@@ -30,13 +30,21 @@ class ConstantContact
   end
 
   def contact_id_from_hash(response_hash)
-    id_url = response_hash["feed"]["entry"]["content"]["Contact"]["id"]
+    id_url = response_hash["entry"]["content"]["Contact"]["id"]
     id_url.split('/').last
   end
 
   def find_contact(contact_id)
     response = oauth_token.get("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{contact_id}")
     Hash.from_xml(response.body)
+  end
+
+  def contact_list_ids_from_hash(response_hash)
+    array = []
+    response_hash["entry"]["content"]["Contact"]["ContactLists"].each do |list|
+      array << list["ContactList"]["id"]
+    end
+    array
   end
 
   def new_contact(new_contact)
@@ -59,7 +67,7 @@ class ConstantContact
           contact.OptInSource("ACTION_BY_CONTACT")
           contact.ContactLists do |list|
             list_ids.each do |list_id|
-              list << "<ContactList id=\"http://api.constantcontact.com/ws/customers/#{username}/lists/#{list_id}\" />"
+              list << "<ContactList id=\"#{list_id}\" />"
             end
           end
         end
