@@ -14,6 +14,7 @@ gem 'sass-rails'
 gem 'bootstrap-sass'
 
 gem 'omniauth-constantcontact2'
+gem 'nokogiri'
 gem 'builder'
 
 gem 'foreman'

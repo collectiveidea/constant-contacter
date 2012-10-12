@@ -19,6 +19,10 @@ class ConstantContact
     OAuth2::AccessToken.new(oauth_client, @authentication_code)
   end
 
+  def find_contact(contact_id)
+    response = oauth_token.get("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{contact_id}")
+  end
+
   def find_contact_by_email(email)
     response = oauth_token.get("https://api.constantcontact.com/ws/customers/#{@username}/contacts?email=#{email}")
     hash = Hash.from_xml(response.body)
@@ -34,11 +38,6 @@ class ConstantContact
     id_url.split('/').last
   end
 
-  def find_contact(contact_id)
-    response = oauth_token.get("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{contact_id}")
-    Hash.from_xml(response.body)
-  end
-
   def contact_list_ids_from_hash(response_hash)
     (response_hash["entry"]["content"]["Contact"]["ContactLists"] || {}).map do |key, value|
       value["id"]
@@ -47,6 +46,10 @@ class ConstantContact
 
   def new_contact(new_contact)
     oauth_token.post("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{new_contact}")
+  end
+
+  def add_list_to_contact(contact_xml, list)
+    document = Nokogiri.XML(contact_xml)
   end
 
   def generate_new_contact(email_address, first_name, last_name, postal_code, list_ids, username)
