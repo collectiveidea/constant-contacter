@@ -139,7 +139,6 @@ DEPENDENCIES
   builder
   foreman
   heroku
-  json
   omniauth-constantcontact2
   pg
   rails (= 3.2.3)

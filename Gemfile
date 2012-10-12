@@ -15,7 +15,6 @@ gem 'bootstrap-sass'
 
 gem 'omniauth-constantcontact2'
 gem 'builder'
-gem 'json'
 
 gem 'foreman'
 gem 'thin'

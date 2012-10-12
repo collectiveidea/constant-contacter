@@ -3,7 +3,7 @@ class List < ActiveRecord::Base
   validates :name, :uniqueness => true, :presence => true
 
   def save_authentication_code(code)
-    self.authentication_code = code
+    authentication_code = code
     self.save!
   end
 
@@ -12,16 +12,18 @@ class List < ActiveRecord::Base
   end
 
   def add_email(data)
-    if contact = ConstantContact.find_contact_by_email(data[:email])
+    constant_contact = ConstantContact.new(self)
+    if contact = constant_contact.find_contact_by_email(data[:email])
       # Because Constant Contact doesn't return a full contact when searching by email
-      contact = ConstantContact.find_contact(contact.int_id)
+      contact = constant_contact.find_contact(contact.int_id)
       contact.contact_lists = contact_contact_lists | [list]
     else
-      contact = ConstantContact.new_contact(
+      contact = constant_contact.new_contact(
         :email_address => data[:email],
         :first_name    => data[:first_name],
         :last_name     => data[:last_name],
         :postal_code   => data[:postal_code],
+        :username      => username,
         :list_ids      => [list])
     end
   end
