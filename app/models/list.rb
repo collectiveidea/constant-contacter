@@ -2,15 +2,13 @@ class List < ActiveRecord::Base
   attr_accessible :list, :name, :password, :username, :api_key, :authentication_code
   validates :name, :uniqueness => true, :presence => true
 
-  require 'json'
-
   def save_authentication_code(code)
     self.authentication_code = code
     self.save!
   end
 
   def authorized?
-    authentication_code.blank?
+    !authentication_code.empty?
   end
 
   def add_email(data)
@@ -26,26 +24,5 @@ class List < ActiveRecord::Base
         :postal_code   => data[:postal_code],
         :list_ids      => [list])
     end
-  end
-
-  def oauth_client
-    OAuth2::Client.new(
-      api_key,
-      consumer_secret,
-      :site => 'https://oauth2.constantcontact.com',
-      :authorize_url => '/oauth2/oauth/siteowner/authorize',
-      :token_url => '/oauth2/oauth/token')
-  end
-
-  def oauth_token
-    OAuth2::AccessToken.new(oauth_client, authentication_code)
-  end
-
-  def find_contact_by_email(email)
-    oauth_token.get("https://api.constantcontact.com/ws/customers/#{username}/contacts?email=#{email}")
-  end
-
-  def new_contact
-
   end
 end
