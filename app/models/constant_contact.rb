@@ -51,12 +51,12 @@ class ConstantContact
 
   def generate_new_contact(email_address, first_name, last_name, postal_code, list_ids, username)
     builder = Builder::XmlMarkup.new
-    contact = builder.entry(:xmlns => "http://ws.constantcontact.com/ns/1.0/") do |entry|
-      entry.title(:type => "text")
+    contact = builder.entry(:xmlns => "http://www.w3.org/2005/Atom") do |entry|
+      entry.title(:type => :text)
       entry.updated("2008-07-23T14:21:06.407Z")
       entry.author
       entry.id("data:,none")
-      entry.summary("Contact", :type => "text")
+      entry.summary("Contact", :type => :text)
       entry.content(:type => "application/vnd.ctct+xml") do |content|
         content.Contact(:xmlns => "http://ws.constantcontact.com/ns/1.0/") do |contact|
           contact.EmailAddress(email_address)
