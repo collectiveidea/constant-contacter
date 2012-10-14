@@ -19,8 +19,10 @@ class ConstantContact
     OAuth2::AccessToken.new(oauth_client, @authentication_code)
   end
 
-  def find_contact(contact_id)
-    response = oauth_token.get("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{contact_id}")
+  def find_contact(contact_id, output = :xml)
+    xml_response = oauth_token.get("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{contact_id}")
+    Hash.from_xml(response.body) if output == :hash
+    xml_response.body if output == :xml
   end
 
   def find_contact_by_email(email)
@@ -45,7 +47,7 @@ class ConstantContact
   end
 
   def new_contact(new_contact)
-    oauth_token.post("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{new_contact}")
+    oauth_token.post("https://api.constantcontact.com/ws/customers/#{@username}/contacts", {:body => new_contact, :headers => {'Content-Type' => 'application/atom+xml;type=entry'}})
   end
 
   def add_list_to_contact(contact_xml, list)
@@ -54,7 +56,7 @@ class ConstantContact
 
   def generate_new_contact(email_address, first_name, last_name, postal_code, list_ids, username)
     builder = Builder::XmlMarkup.new
-    contact = builder.entry(:xmlns => "http://www.w3.org/2005/Atom") do |entry|
+    builder.entry(:xmlns => "http://www.w3.org/2005/Atom") do |entry|
       entry.title(:type => :text)
       entry.updated("2008-07-23T14:21:06.407Z")
       entry.author
