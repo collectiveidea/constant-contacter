@@ -25,13 +25,13 @@ class ConstantContact
     xml_response.body if output == :xml
   end
 
-  def find_contact_by_email(email)
+  def find_contact_id_by_email(email)
     response = oauth_token.get("https://api.constantcontact.com/ws/customers/#{@username}/contacts?email=#{email}")
     hash = Hash.from_xml(response.body)
-    if hash['entry'].nil?
+    if hash['feed'].nil?
       nil
     else
-      hash
+      hash['feed']['entry']['id'].split('/').last
     end
   end
 
@@ -52,31 +52,37 @@ class ConstantContact
 
   def add_list_to_contact(contact_xml, list_id)
     document      = Nokogiri::XML(contact_xml)
-    contact_id    = document.at_xpath('//Contact:Contact', 'Contact' => 'http://ws.constantcontact.com/ns/1.0/').first[1].split('/').last
+    contact       = document.at_xpath('//Contact:Contact', 'Contact' => 'http://ws.constantcontact.com/ns/1.0/')
+
     contact_lists = document.at_xpath('//Contact:ContactLists', 'Contact' => 'http://ws.constantcontact.com/ns/1.0/')
+    unless contact_lists
+      contact_lists = Nokogiri::XML::Node.new "ContactLists", document
+      contact_lists.parent=(contact)
+    end
 
     new_contact_list            = Nokogiri::XML::Node.new "ContactList", document
     new_contact_list['id']      = list_id
-    new_contact_list.parent= contact_lists
+    new_contact_list.parent=(contact_lists)
 
     contact_list_link           = Nokogiri::XML::Node.new "link", document
     contact_list_link['xmlns']  = "http://www.w3.org/2005/Atom"
     contact_list_link['href']   = list_id
     contact_list_link['rel']    = "self"
-    contact_list_link.parent= new_contact_list
+    contact_list_link.parent=(new_contact_list)
 
     contact_list_source         = Nokogiri::XML::Node.new "OptInSource", document
     contact_list_source.content = "ACTION_BY_CONTACT"
-    contact_list_source.parent= new_contact_list
+    contact_list_source.parent=(new_contact_list)
 
     contact_list_time           = Nokogiri::XML::Node.new "OptInTime", document
     contact_list_time.content   = DateTime.now.iso8601
-    contact_list_time.parent= new_contact_list
+    contact_list_time.parent=(new_contact_list)
 
-    oauth_token.put("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{contact_id}", {:body => document.to_xml, :headers => {'Content-Type' => 'application/atom+xml;type=entry'}})
+    document.to_xml
+    # oauth_token.put("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{contact_id}", {:body => document.to_xml, :headers => {'Content-Type' => 'application/atom+xml;type=entry'}})
   end
 
-  def generate_new_contact(email_address, first_name, last_name, postal_code, list_ids, username)
+  def generate_new_contact(email_address, first_name, last_name, postal_code, username, list_ids)
     builder = Builder::XmlMarkup.new
     builder.entry(:xmlns => "http://www.w3.org/2005/Atom") do |entry|
       entry.title(:type => :text)
