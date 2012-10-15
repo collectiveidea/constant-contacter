@@ -53,6 +53,7 @@ class ConstantContact
   def add_list_to_contact(contact_xml, list_id)
     document      = Nokogiri::XML(contact_xml)
     contact       = document.at_xpath('//Contact:Contact', 'Contact' => 'http://ws.constantcontact.com/ns/1.0/')
+    contact_id    = contact['id'].split('/').last
 
     contact_lists = document.at_xpath('//Contact:ContactLists', 'Contact' => 'http://ws.constantcontact.com/ns/1.0/')
     unless contact_lists
@@ -78,8 +79,7 @@ class ConstantContact
     contact_list_time.content   = DateTime.now.iso8601
     contact_list_time.parent=(new_contact_list)
 
-    document.to_xml
-    # oauth_token.put("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{contact_id}", {:body => document.to_xml, :headers => {'Content-Type' => 'application/atom+xml;type=entry'}})
+    oauth_token.put("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{contact_id}", {:body => document.to_xml, :headers => {'Content-Type' => 'application/atom+xml;type=entry'}})
   end
 
   def generate_new_contact(email_address, first_name, last_name, postal_code, username, list_ids)

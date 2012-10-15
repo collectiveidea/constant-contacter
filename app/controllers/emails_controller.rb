@@ -1,10 +1,6 @@
 class EmailsController < ApplicationController
   def create
-    List.find_by_name!(params[:name]).add_email(params)
-    if params[:return].present?
-      redirect_to params[:return]
-    else
-      render :text => 'Thank you!'
-    end
+    List.add_email(params)
+    render :text => 'Thank you!'
   end
 end
