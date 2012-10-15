@@ -50,8 +50,30 @@ class ConstantContact
     oauth_token.post("https://api.constantcontact.com/ws/customers/#{@username}/contacts", {:body => new_contact, :headers => {'Content-Type' => 'application/atom+xml;type=entry'}})
   end
 
-  def add_list_to_contact(contact_xml, list)
-    document = Nokogiri.XML(contact_xml)
+  def add_list_to_contact(contact_xml, list_id)
+    document      = Nokogiri::XML(contact_xml)
+    contact_id    = document.at_xpath('//Contact:Contact', 'Contact' => 'http://ws.constantcontact.com/ns/1.0/').first[1].split('/').last
+    contact_lists = document.at_xpath('//Contact:ContactLists', 'Contact' => 'http://ws.constantcontact.com/ns/1.0/')
+
+    new_contact_list            = Nokogiri::XML::Node.new "ContactList", document
+    new_contact_list['id']      = list_id
+    new_contact_list.parent= contact_lists
+
+    contact_list_link           = Nokogiri::XML::Node.new "link", document
+    contact_list_link['xmlns']  = "http://www.w3.org/2005/Atom"
+    contact_list_link['href']   = list_id
+    contact_list_link['rel']    = "self"
+    contact_list_link.parent= new_contact_list
+
+    contact_list_source         = Nokogiri::XML::Node.new "OptInSource", document
+    contact_list_source.content = "ACTION_BY_CONTACT"
+    contact_list_source.parent= new_contact_list
+
+    contact_list_time           = Nokogiri::XML::Node.new "OptInTime", document
+    contact_list_time.content   = DateTime.now.iso8601
+    contact_list_time.parent= new_contact_list
+
+    oauth_token.put("https://api.constantcontact.com/ws/customers/#{@username}/contacts/#{contact_id}", {:body => document.to_xml, :headers => {'Content-Type' => 'application/atom+xml;type=entry'}})
   end
 
   def generate_new_contact(email_address, first_name, last_name, postal_code, list_ids, username)
