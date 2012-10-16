@@ -28,7 +28,7 @@ class ConstantContact
   def find_contact_id_by_email(email)
     response = oauth_token.get("https://api.constantcontact.com/ws/customers/#{@username}/contacts?email=#{email}")
     hash = Hash.from_xml(response.body)
-    if hash['feed'].nil?
+    if hash['feed']['entry'].nil?
       nil
     else
       hash['feed']['entry']['id'].split('/').last
