@@ -1,6 +1,7 @@
 class EmailsController < ApplicationController
   def create
-    List.add_email(params)
+    list = List.find(params[:list_id])
+    list.add_email(params)
     render :text => 'Thank you!'
   end
 end
