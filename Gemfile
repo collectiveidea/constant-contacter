@@ -17,5 +17,6 @@ gem 'omniauth-constantcontact2'
 gem 'nokogiri'
 gem 'builder'
 
+gem 'airbrake'
 gem 'foreman'
 gem 'thin'
