@@ -28,7 +28,7 @@ class List < ActiveRecord::Base
         data[:last_name],
         data[:postal_code],
         username,
-        [constant_contact_list_id])
+        [list_id])
       cc.new_contact(new_contact_xml)
     end
   end
