@@ -8,7 +8,7 @@ class List < ActiveRecord::Base
   end
 
   def authorized?
-    !authentication_code.empty?
+    !authentication_code.nil?
   end
 
   def list_id
