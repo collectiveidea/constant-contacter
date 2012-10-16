@@ -2,6 +2,6 @@ class EmailsController < ApplicationController
   def create
     list = List.find(params[:list_id])
     list.add_email(params)
-    render :text => 'Thank you!'
+    redirect_to params[:return]
   end
 end
