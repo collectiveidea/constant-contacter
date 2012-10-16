@@ -41,8 +41,8 @@ class ConstantContact
   end
 
   def contact_list_ids_from_hash(response_hash)
-    (response_hash["entry"]["content"]["Contact"]["ContactLists"] || {}).map do |key, value|
-      value["id"]
+    (response_hash['feed']['entry']['content']['Contact']['ContactLists'] || {}).map do |key, value|
+      value['id']
     end
   end
 
@@ -95,6 +95,7 @@ class ConstantContact
           contact.EmailAddress(email_address)
           contact.FirstName(first_name)
           contact.LastName(last_name)
+          contact.PostalCode(postal_code)
           contact.OptInSource("ACTION_BY_CONTACT")
           contact.ContactLists do |list|
             list_ids.each do |list_id|
