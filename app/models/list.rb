@@ -16,6 +16,7 @@ class List < ActiveRecord::Base
   end
 
   def add_email(data)
+    return unless data[:email]
     cc = ConstantContact.new(self)
     if contact_id = cc.find_contact_id_by_email(data[:email])
       # Because Constant Contact doesn't return a full contact when searching by email
